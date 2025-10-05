@@ -1,0 +1,1921 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Robotics Club of BRACU</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    /* Base Styles */
+    :root {
+        --neon-pink: #ff2a6d;
+        --neon-blue: #00eeff;
+        --neon-purple: #d300c5;
+        --dark-bg: #0d0221;
+        --darker-bg: #05010f;
+        --text-color: #f8f8f8;
+        --glow: 0 0 10px rgba(5, 217, 232, 0.8), 0 0 20px rgba(5, 217, 232, 0.6);
+        --pink-glow: 0 0 10px rgba(255, 42, 109, 0.8), 0 0 20px rgba(255, 42, 109, 0.6);
+        --text-glow: 0 0 5px #2d23b3, 0 0 10px #2d23b3, 0 0 15px var(--neon-blue), 0 0 20px var(--neon-blue);
+        --font-primary: 'Orbitron', sans-serif;
+        --font-secondary: 'Share Tech Mono', monospace;
+    }
+    
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+    
+    body {
+        background-color: var(--dark-bg);
+        color: var(--text-color);
+        font-family: var(--font-secondary);
+        overflow-x: hidden;
+        position: relative;
+    }
+    
+    body::before {
+        content: "";
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: 
+        linear-gradient(45deg, var(--dark-bg) 25%, transparent 25%) -50px 0,
+        linear-gradient(-45deg, var(--dark-bg) 25%, transparent 25%) -50px 0,
+        linear-gradient(45deg, transparent 75%, var(--dark-bg) 75%),
+        linear-gradient(-45deg, transparent 75%, var(--dark-bg) 75%);
+        background-size: 100px 100px;
+        opacity: 0.1;
+        z-index: -1;
+    }
+    
+    /* Cyberpunk Scanlines Effect */
+    body::after {
+        content: "";
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: 
+        linear-gradient(
+            rgba(18, 16, 16, 0) 50%, 
+            rgba(0, 0, 0, 0.25) 50%
+        );
+        background-size: 100% 2px;
+        pointer-events: none;
+        z-index: 9999;
+    }
+    
+    /* Navbar Styles */
+    .navbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1rem 2rem;
+        background-color: rgba(13, 2, 33, 0.9);
+        border-bottom: 1px solid var(--neon-blue);
+        box-shadow: var(--glow);
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+        backdrop-filter: blur(5px);
+    }
+    
+    .nav-left, .nav-right {
+        display: flex;
+        align-items: center;
+        gap: 2rem;
+    }
+
+    .nav-left {
+        padding-left: 80px;
+    }
+    
+    .logo-container {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+    
+    .logo {
+        width: 60px;
+        height: 60px;
+        object-fit: contain;
+        filter: drop-shadow(0 0 5px var(--neon-blue)) drop-shadow(0 0 10px var(--neon-blue));
+        transition: all 0.3s ease;
+    }
+    
+    .logo:hover {
+        transform: scale(1.1);
+        filter: drop-shadow(0 0 8px var(--neon-pink)) drop-shadow(0 0 15px var(--neon-pink));
+    }
+    
+    .logo-text {
+        font-family: var(--font-primary);
+        color: var(--neon-blue);
+        font-size: 1.2rem;
+        line-height: 1.2;
+        text-shadow: var(--text-glow);
+        display: none;
+    }
+    
+    .nav-link {
+        color: var(--text-color);
+        text-decoration: none;
+        font-family: var(--font-primary);
+        font-size: 1rem;
+        letter-spacing: 1px;
+        position: relative;
+        padding: 0.5rem 0;
+        transition: all 0.3s ease;
+    }
+    
+    .nav-link::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 0;
+        height: 2px;
+        background-color: var(--neon-pink);
+        transition: width 0.3s ease;
+    }
+    
+    .nav-link:hover::after {
+        width: 100%;
+    }
+    
+    .nav-link.active {
+        color: var(--neon-blue);
+        text-shadow: var(--text-glow);
+    }
+    
+    .nav-link.active::after {
+        background-color: var(--neon-blue);
+        width: 100%;
+    }
+    
+    /* Menu Icon */
+    .menu-icon {
+        display: none;
+        font-size: 1.5rem;
+        color: var(--neon-blue);
+        cursor: pointer;
+        transition: all 0.3s ease;
+        z-index: 1001;
+    }
+    
+    .menu-icon:hover {
+        color: var(--neon-pink);
+        text-shadow: var(--pink-glow);
+    }
+    
+    /* Mobile Menu */
+    .mobile-menu {
+        position: fixed;
+        top: 0;
+        right: -100%;
+        width: 80%;
+        max-width: 400px;
+        height: 100vh;
+        background: linear-gradient(135deg, rgba(13, 2, 33, 0.95), rgba(5, 1, 15, 0.98));
+        border-left: 1px solid var(--neon-blue);
+        box-shadow: -5px 0 15px rgba(5, 217, 232, 0.5);
+        z-index: 1002;
+        transition: right 0.4s ease;
+        display: flex;
+        flex-direction: column;
+        padding: 2rem;
+        overflow-y: auto;
+    }
+    
+    .mobile-menu.active {
+        right: 0;
+    }
+    
+    .close-menu {
+        align-self: flex-end;
+        font-size: 1.8rem;
+        color: var(--neon-blue);
+        cursor: pointer;
+        margin-bottom: 2rem;
+        transition: all 0.3s ease;
+    }
+    
+    .close-menu:hover {
+        color: var(--neon-pink);
+        transform: rotate(90deg);
+    }
+    
+    .mobile-nav-links {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+    
+    .mobile-nav-link {
+        color: var(--text-color);
+        text-decoration: none;
+        font-family: var(--font-primary);
+        font-size: 1.2rem;
+        padding: 0.8rem 0;
+        border-bottom: 1px solid rgba(5, 217, 232, 0.3);
+        transition: all 0.3s ease;
+        position: relative;
+    }
+    
+    .mobile-nav-link::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 0;
+        height: 2px;
+        background-color: var(--neon-pink);
+        transition: width 0.3s ease;
+    }
+    
+    .mobile-nav-link:hover::after {
+        width: 100%;
+    }
+    
+    .mobile-nav-link.active {
+        color: var(--neon-blue);
+        text-shadow: var(--text-glow);
+    }
+    
+    .mobile-nav-link.active::after {
+        background-color: var(--neon-blue);
+        width: 100%;
+    }
+    
+    .mobile-buttons {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        margin-top: auto;
+    }
+    
+    /* Overlay for mobile menu */
+    .menu-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.7);
+        z-index: 1001;
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.3s ease;
+    }
+    
+    .menu-overlay.active {
+        opacity: 1;
+        visibility: visible;
+    }
+    
+    /* Neon Button Styles */
+    .btn {
+        padding: 0.6rem 1.2rem;
+        border: none;
+        border-radius: 4px;
+        font-family: var(--font-primary);
+        font-weight: bold;
+        letter-spacing: 1px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+        text-transform: uppercase;
+        font-size: 0.8rem;
+    }
+    
+    .neon-btn {
+        background-color: transparent;
+        color: var(--neon-blue);
+        border: 1px solid var(--neon-blue);
+        box-shadow: var(--glow);
+    }
+    
+    .neon-btn:hover {
+        background-color: var(--neon-blue);
+        color: var(--dark-bg);
+        text-shadow: 0 0 5px var(--dark-bg);
+        box-shadow: 0 0 20px var(--neon-blue), 0 0 40px var(--neon-blue);
+    }
+    
+    .neon-btn::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(5, 217, 232, 0.4), transparent);
+        transition: 0.5s;
+    }
+    
+    .neon-btn:hover::before {
+        left: 100%;
+    }
+    
+    /* Hero Section Styles */
+    .hero-section {
+        height: 92vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        overflow: hidden;
+        background: linear-gradient(to bottom, rgba(0, 0, 0, 0.8), rgba(5, 1, 14, 0.2)), 
+                    url('static/uploads/robubg.jpg') no-repeat center center/cover;
+    }
+    
+    .hero-content {
+        text-align: center;
+        z-index: 2;
+        padding: 2rem;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+    
+    .hero-section h1 {
+        font-family: var(--font-primary);
+        font-size: 5.5rem;
+        margin-bottom: 1rem;
+        color: var(--neon-blue);
+        text-shadow: var(--text-glow);
+        letter-spacing: 3px;
+        line-height: 1.2;
+        animation: flicker 1.5s infinite alternate;
+    }
+    
+    .slogan {
+        font-family: var(--font-secondary);
+        font-size: 2.5rem;
+        color: var(--neon-pink);
+        text-shadow: 0 0 5px var(--neon-pink), 0 0 10px var(--neon-pink);
+        letter-spacing: 2px;
+        margin-top: 1rem;
+        position: relative;
+        display: inline-block;
+    }
+    
+    .slogan::after {
+        content: '';
+        position: absolute;
+        bottom: -10px;
+        left: 0;
+        width: 100%;
+        height: 2px;
+        background: linear-gradient(90deg, transparent, var(--neon-pink), transparent);
+        animation: scanline 3s linear infinite;
+    }
+    
+    /* Vision and Slider Container */
+    .vision-slider-container {
+        display: flex;
+        max-width: 1200px;
+        margin: 4rem auto;
+        gap: 5rem;
+        align-items: stretch;
+    }
+    
+    /* Vision Card Styles */
+    .vision-card {
+        flex: 1;
+        background: linear-gradient(135deg, rgba(13, 2, 33, 0.9), rgba(5, 1, 15, 0.9));
+        border: 1px solid var(--neon-blue);
+        border-radius: 8px;
+        padding: 2rem;
+        box-shadow: var(--glow);
+        position: relative;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+    
+    .vision-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: 
+            linear-gradient(45deg, transparent 49%, var(--neon-blue) 49%, var(--neon-blue) 51%, transparent 51%),
+            linear-gradient(-45deg, transparent 49%, var(--neon-blue) 49%, var(--neon-blue) 51%, transparent 51%);
+        background-size: 20px 20px;
+        opacity: 0.1;
+        z-index: 0;
+    }
+    
+    .vision-card::after {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: linear-gradient(
+            to bottom right,
+            rgba(255, 42, 109, 0.1) 0%,
+            rgba(0, 238, 255, 0.1) 50%,
+            rgba(211, 0, 197, 0.1) 100%
+        );
+        animation: rotate 10s linear infinite;
+        z-index: -1;
+    }
+    
+    .vision-title {
+        font-family: var(--font-primary);
+        font-size: 2rem;
+        color: var(--neon-blue);
+        margin-bottom: 1.5rem;
+        text-align: center;
+        position: relative;
+        z-index: 1;
+        letter-spacing: 2px;
+    }
+    
+    .vision-text {
+        font-family: var(--font-secondary);
+        font-size: 1rem;
+        line-height: 1.6;
+        color: var(--text-color);
+        text-align: justify;
+        position: relative;
+        z-index: 1;
+    }
+    
+    
+    /* Slider Styles */
+    .js-slider {
+        flex: 1;
+        position: relative;
+        overflow: hidden;
+        border: 1px solid var(--neon-blue);
+        box-shadow: var(--glow);
+        border-radius: 8px;
+        min-height: 500px;
+    }
+    
+    .slides-container {
+        display: flex;
+        transition: transform 0.5s ease-in-out;
+        height: 100%;
+        min-height: 500px;
+    }
+    
+    .slide {
+        min-width: 100%;
+        height: 100%;
+        object-fit: contain;
+        background-color: rgba(2, 37, 33, 0.7);
+        filter: grayscale(30%) contrast(110%);
+        transition: filter 0.3s ease;
+    }
+    
+    .slide:hover {
+        filter: grayscale(0%) contrast(120%) brightness(110%);
+    }
+    
+    .slider-controls {
+        position: absolute;
+        top: 50%;
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        transform: translateY(-50%);
+        padding: 0 1rem;
+    }
+    
+    .slider-controls button {
+        background-color: rgba(13, 2, 33, 0.7);
+        color: var(--neon-blue);
+        border: 1px solid var(--neon-blue);
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        font-size: 1.2rem;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s ease;
+        box-shadow: var(--glow);
+    }
+    
+    .slider-controls button:hover {
+        background-color: var(--neon-blue);
+        color: var(--dark-bg);
+        transform: scale(1.1);
+    }
+    
+    /* Flagship Projects Section */
+    .flagship-project {
+        max-width: 1250px;
+        margin: 4rem auto;
+        padding: 0 2rem;
+    }
+    
+    .flagship-title {
+        font-family: var(--font-primary);
+        font-size: 3rem;
+        color: var(--neon-blue);
+        text-align: center;
+        margin-bottom: 3rem;
+        letter-spacing: 3px;
+        position: relative;
+        animation: flicker 1.5s infinite alternate;
+    }
+    
+    .flagship-title::after {
+        content: '';
+        position: absolute;
+        bottom: -15px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 200px;
+        height: 3px;
+        background: linear-gradient(90deg, transparent, var(--neon-pink), transparent);
+        animation: scanline 3s linear infinite;
+    }
+    
+    .flagship-card-container {
+        position: relative;
+        width: 100%;
+        height: 0;
+        padding-bottom: 35.71%; /* 4:14 ratio (5/14 = 0.3571) */
+        border: 1px solid var(--neon-blue);
+        box-shadow: var(--glow);
+        border-radius: 8px;
+        overflow: hidden;
+        background: linear-gradient(135deg, rgba(13, 2, 33, 0.9), rgba(5, 1, 15, 0.9));
+    }
+    
+    .flagship-card-container::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: 
+            linear-gradient(45deg, transparent 49%, var(--neon-blue) 49%, var(--neon-blue) 51%, transparent 51%),
+            linear-gradient(-45deg, transparent 49%, var(--neon-blue) 49%, var(--neon-blue) 51%, transparent 51%);
+        background-size: 20px 20px;
+        opacity: 0.1;
+        z-index: 0;
+    }
+    
+    .flagship-slides-container {
+        display: flex;
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        transition: transform 0.8s ease-in-out;
+    }
+    
+    .flagship-slide {
+        min-width: 100%;
+        height: 100%;
+        display: flex;
+        position: relative;
+    }
+    
+    .flagship-content {
+        width: 65%;
+        padding: 4rem;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        position: relative;
+        z-index: 1;
+    }
+    
+    .flagship-image {
+        width: 35%;
+        padding: 4rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        z-index: 1;
+    }
+    
+    .flagship-image img {
+        width: 100%;
+        height: auto;
+        max-height: 100%;
+        object-fit: cover;
+        border: 1px solid var(--neon-pink);
+        box-shadow: var(--pink-glow);
+        border-radius: 4px;
+        transition: all 0.3s ease;
+    }
+    
+    .flagship-image img:hover {
+        transform: scale(1.02);
+        box-shadow: 0 0 15px var(--neon-pink), 0 0 30px var(--neon-pink);
+    }
+    
+    .flagship-name {
+        font-family: var(--font-primary);
+        font-size: 2rem;
+        color: var(--neon-blue);
+        margin-bottom: 1rem;
+        letter-spacing: 2px;
+    }
+    
+    .flagship-description {
+        font-family: var(--font-secondary);
+        font-size: 1rem;
+        line-height: 1.6;
+        color: var(--text-color);
+        text-align: justify;
+    }
+    
+    .flagship-controls {
+        position: absolute;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        gap: 10px;
+        z-index: 2;
+    }
+    
+    .flagship-dot {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background-color: rgba(255, 255, 255, 0.3);
+        border: 1px solid var(--neon-blue);
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    
+    .flagship-dot.active {
+        background-color: var(--neon-blue);
+        box-shadow: var(--glow);
+    }
+    
+    .flagship-dot:hover {
+        background-color: var(--neon-pink);
+        box-shadow: var(--pink-glow);
+    }
+    
+    .flagship-nav {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        background-color: rgba(13, 2, 33, 0.7);
+        color: var(--neon-blue);
+        border: 1px solid var(--neon-blue);
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        font-size: 1.2rem;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s ease;
+        box-shadow: var(--glow);
+        z-index: 2;
+    }
+    
+    .flagship-nav:hover {
+        background-color: var(--neon-blue);
+        color: var(--dark-bg);
+        transform: translateY(-50%) scale(1.1);
+    }
+    
+    .flagship-prev {
+        left: 15px;
+    }
+    
+    .flagship-next {
+        right: 15px;
+    }
+
+     /* Footer Section */
+    .footer-section {
+        background: linear-gradient(to top, rgba(5, 1, 15, 0.95), rgba(13, 2, 33, 0.9));
+        border-top: 1px solid var(--neon-blue);
+        box-shadow: 0 -5px 15px rgba(5, 217, 232, 0.3);
+        padding: 3rem 2rem 1rem;
+        margin-top: 4rem;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .footer-section::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: 
+            linear-gradient(45deg, transparent 49%, var(--neon-blue) 49%, var(--neon-blue) 51%, transparent 51%),
+            linear-gradient(-45deg, transparent 49%, var(--neon-blue) 49%, var(--neon-blue) 51%, transparent 51%);
+        background-size: 30px 30px;
+        opacity: 0.05;
+        z-index: 0;
+    }
+    
+    .footer-content {
+        max-width: 1200px;
+        margin: 0 auto;
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        position: relative;
+        z-index: 1;
+    }
+    
+    .footer-left {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .footer-logo-container {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 1rem;
+    }
+    
+    .footer-logo {
+        width: 70px;
+        height: 70px;
+        object-fit: contain;
+        filter: drop-shadow(0 0 5px var(--neon-blue)) drop-shadow(0 0 10px var(--neon-blue));
+    }
+    
+    .footer-club-name {
+        font-family: var(--font-primary);
+        font-size: 1.5rem;
+        color: var(--neon-blue);
+        text-shadow: var(--text-glow);
+        letter-spacing: 1px;
+    }
+    
+    .footer-address {
+        font-family: var(--font-secondary);
+        font-size: 1rem;
+        line-height: 1.4;
+        color: var(--text-color);
+        max-width: 500px;
+    }
+    
+    .footer-email {
+        font-family: var(--font-secondary);
+        font-size: 1rem;
+        color: var(--neon-pink);
+        text-decoration: none;
+        transition: all 0.3s ease;
+        display: inline-block;
+        position: relative;
+    }
+    
+    .footer-email::after {
+        content: '';
+        position: absolute;
+        bottom: -2px;
+        left: 0;
+        width: 0;
+        height: 1px;
+        background-color: var(--neon-pink);
+        transition: width 0.3s ease;
+    }
+    
+    .footer-email:hover {
+        text-shadow: 0 0 5px var(--neon-pink);
+    }
+    
+    .footer-email:hover::after {
+        width: 100%;
+    }
+    
+    .footer-right {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 1.5rem;
+    }
+    
+    .social-icons {
+        display: flex;
+        flex-direction: column;
+        gap: 1.2rem;
+    }
+    
+    .social-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background: rgba(13, 2, 33, 0.7);
+        border: 1px solid var(--neon-blue);
+        color: var(--neon-blue);
+        font-size: 1.5rem;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        box-shadow: var(--glow);
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .social-icon::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(5, 217, 232, 0.4), transparent);
+        transition: 0.5s;
+    }
+    
+    .social-icon:hover::before {
+        left: 100%;
+    }
+    
+    .social-icon:hover {
+        background-color: var(--neon-blue);
+        color: var(--dark-bg);
+        transform: scale(1.1);
+        box-shadow: 0 0 15px var(--neon-blue), 0 0 30px var(--neon-blue);
+    }
+    
+    .footer-bottom {
+        max-width: 1200px;
+        margin: 2rem auto 0;
+        padding-top: 1.5rem;
+        border-top: 1px solid rgba(5, 217, 232, 0.3);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        position: relative;
+        z-index: 1;
+    }
+    
+    .footer-bottom::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 1px;
+        background: linear-gradient(90deg, transparent, var(--neon-blue), transparent);
+    }
+    
+    .copyright, .developer {
+        font-family: var(--font-secondary);
+        font-size: 1.2rem;
+        color: var(--text-color);
+    }
+    
+    .developer {
+        color: var(--neon-pink);
+    }
+    
+    /* Cyberpunk Grid Overlay */
+    .grid-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: 
+        linear-gradient(rgba(5, 217, 232, 0.1) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(5, 217, 232, 0.1) 1px, transparent 1px);
+        background-size: 20px 20px;
+        pointer-events: none;
+        z-index: -1;
+    }
+    
+    /* Animations */
+    @keyframes flicker {
+        0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% {
+        text-shadow: var(--text-glow);
+        }
+        20%, 24%, 55% {
+        text-shadow: none;
+        }
+    }
+    
+    @keyframes scanline {
+        0% {
+        transform: translateX(-100%);
+        }
+        100% {
+        transform: translateX(100%);
+        }
+    }
+    
+    @keyframes pulse {
+        0% {
+        box-shadow: 0 0 5px var(--neon-blue), 0 0 10px var(--neon-blue);
+        }
+        50% {
+        box-shadow: 0 0 20px var(--neon-blue), 0 0 30px var(--neon-blue);
+        }
+        100% {
+        box-shadow: 0 0 5px var(--neon-blue), 0 0 10px var(--neon-blue);
+        }
+    }
+    
+    @keyframes rotate {
+        0% {
+            transform: rotate(0deg);
+        }
+        100% {
+            transform: rotate(360deg);
+        }
+    }
+    
+    /* Responsive Design */
+    @media (max-width: 1024px) {
+        .nav-left {
+            padding-left: 0;
+        }
+        
+        .navbar {
+            padding: 1rem;
+        }
+        
+        .nav-left {
+            display: none;
+        }
+        
+        .nav-right {
+            display: none;
+        }
+        
+        .logo-text {
+            display: block;
+        }
+        
+        .menu-icon {
+            display: block;
+        }
+        
+        .hero-section h1 {
+        font-size: 2.5rem;
+        }
+        
+        .slogan {
+        font-size: 1.4rem;
+        }
+        
+        .vision-slider-container {
+            flex-direction: column;
+            max-width: 500px;
+            gap: 1.5rem;
+            margin: 2.5rem auto;
+        }
+        
+        .vision-card {
+            padding: 1.5rem;
+            width: 100%;
+        }
+        
+        .vision-title {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .vision-text {
+            font-size: 0.85rem;
+            line-height: 1.5;
+        }
+
+        .js-slider {
+            min-height: 500px;
+            width: 500px;
+        }
+        
+        .slides-container {
+            min-height: 500px;
+            height: 500px;
+        }
+        
+        .slider-controls button {
+            width: 30px;
+            height: 30px;
+            font-size: 1rem;
+        }
+
+        .flagship-project {
+            padding: 0 1rem;
+            margin: 5rem auto;
+        }
+        
+        .flagship-title {
+            font-size: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .flagship-card-container {
+            padding-bottom: 70%; /* Adjusted ratio for mobile */
+        }
+        
+        .flagship-slide {
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .flagship-content {
+            width: 100%;
+            padding: 1.5rem;
+            order: 1; /* Ensure content comes first */
+        }
+        
+        .flagship-image {
+            width: 70%;
+            padding: 0 1.5rem 1.5rem;
+            order: 2; /* Ensure image comes after content */
+        }
+        
+        .flagship-name {
+            font-size: 1.5rem;
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+        
+        .flagship-description {
+            font-size: 0.85rem;
+            line-height: 1.5;
+            text-align: justify;
+        }
+        
+        .flagship-nav {
+            width: 30px;
+            height: 30px;
+            font-size: 1rem;
+        }
+        
+        .flagship-dot {
+            width: 9px;
+            height: 9px;
+        }
+
+        .footer-section {
+            padding: 2.5rem 1.5rem 1rem;
+            padding-bottom: 55%;
+        }
+        
+        .footer-content {
+            flex-direction: column;
+            gap: 2.5rem;
+            align-items: flex-start;
+        }
+        
+        .footer-left {
+            width: 100%;
+            align-items: flex-start;
+            text-align: left;
+        }
+        
+        .footer-right {
+            align-items: flex-start;
+            width: 100%;
+        }
+        
+        .social-icons {
+            flex-direction: row;
+            gap: 1.5rem;
+            justify-content: flex-start;
+        }
+        
+        .footer-bottom {
+            flex-direction: column;
+            gap: 1rem;
+            text-align: center;
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+        }
+        
+        .copyright, .developer {
+            width: 100%;
+            text-align: center;
+        }
+    }
+    
+    @media (max-width: 920px) {
+        .navbar {
+            padding: 1rem;
+        }
+        
+        .nav-left {
+            display: none;
+        }
+        
+        .nav-right {
+            display: none;
+        }
+        
+        .logo-text {
+            display: block;
+        }
+        
+        .menu-icon {
+            display: block;
+        }
+        
+        .hero-section h1 {
+        font-size: 2.5rem;
+        }
+        
+        .slogan {
+        font-size: 1.4rem;
+        }
+        
+        .vision-slider-container {
+            flex-direction: column;
+            max-width: 500px;
+            gap: 1.5rem;
+            margin: 2.5rem auto;
+        }
+        
+        .vision-card {
+            padding: 1.5rem;
+            width: 100%;
+        }
+        
+        .vision-title {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .vision-text {
+            font-size: 0.85rem;
+            line-height: 1.5;
+        }
+
+        .js-slider {
+            min-height: 500px;
+            width: 500px;
+        }
+        
+        .slides-container {
+            min-height: 500px;
+            height: 500px;
+        }
+        
+        .slider-controls button {
+            width: 30px;
+            height: 30px;
+            font-size: 1rem;
+        }
+
+        .flagship-project {
+            padding: 0 1rem;
+            margin: 5rem auto;
+        }
+        
+        .flagship-title {
+            font-size: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .flagship-card-container {
+            padding-bottom: 80%; /* Adjusted ratio for mobile */
+        }
+        
+        .flagship-slide {
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .flagship-content {
+            width: 100%;
+            padding: 1.5rem;
+            order: 1; /* Ensure content comes first */
+        }
+        
+        .flagship-image {
+            width: 70%;
+            padding: 0 1.5rem 1.5rem;
+            order: 2; /* Ensure image comes after content */
+        }
+        
+        .flagship-name {
+            font-size: 1.5rem;
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+        
+        .flagship-description {
+            font-size: 0.85rem;
+            line-height: 1.5;
+            text-align: justify;
+        }
+        
+        .flagship-nav {
+            width: 30px;
+            height: 30px;
+            font-size: 1rem;
+        }
+        
+        .flagship-dot {
+            width: 9px;
+            height: 9px;
+        }
+        .footer-section {
+            padding: 2.5rem 1.5rem 1rem;
+            padding-bottom: 30%;
+        }
+        
+        .footer-content {
+            flex-direction: column;
+            gap: 2.5rem;
+            align-items: flex-start;
+        }
+        
+        .footer-left {
+            width: 100%;
+            align-items: flex-start;
+            text-align: left;
+        }
+        
+        .footer-right {
+            align-items: flex-start;
+            width: 100%;
+        }
+        
+        .social-icons {
+            flex-direction: row;
+            gap: 1.5rem;
+            justify-content: flex-start;
+        }
+        
+        .footer-bottom {
+            flex-direction: column;
+            gap: 1rem;
+            text-align: center;
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+        }
+        
+        .copyright, .developer {
+            width: 100%;
+            text-align: center;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .navbar {
+            padding: 0.8rem;
+        }
+        
+        .logo {
+            width: 50px;
+            height: 50px;
+        }
+        
+        .logo-text {
+            font-size: 1rem;
+        }
+        
+        .hero-section h1 {
+        font-size: 1.8rem;
+        }
+        
+        .slogan {
+        font-size: 0.9rem;
+        }
+
+        .vision-slider-container {
+            margin: 3rem auto;
+            gap: 5rem;
+            padding: 0 1rem;
+            align-items: center;
+        }
+        
+        .vision-card {
+            
+            min-height: 350px;
+            width: 350px;
+        }
+        
+        .vision-title {
+            font-size: 1.3rem;
+            margin-bottom: 0.8rem;
+        }
+        
+        .vision-text {
+            font-size: 0.8rem;
+            line-height: 1.4;
+        }
+        
+        .js-slider {
+            min-height: 350px;
+            width: 350px;
+        }
+        
+        .slides-container {
+            min-height: 350px;
+            height: 350px;
+        }
+        
+        .slider-controls button {
+            width: 25px;
+            height: 25px;
+            font-size: 0.8rem;
+        }
+        
+        .btn {
+        padding: 0.4rem 0.8rem;
+        font-size: 0.7rem;
+        }
+        
+        .nav-link {
+        font-size: 0.8rem;
+        }
+        
+        .vision-slider-container {
+            margin: 2rem auto;
+            gap: 1rem;
+        }
+        
+        .vision-card {
+            padding: 1.5rem;
+        }
+        
+        .vision-title {
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+        }
+        
+        .vision-text {
+            font-size: 0.8rem;
+        }
+        
+        .flagship-project {
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+        
+        .flagship-title {
+            font-size: 1.7rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .flagship-card-container {
+            height: 610px;
+        }
+        
+        .flagship-content {
+            padding: 1rem;
+            align-items: center;
+        }
+        
+        .flagship-image {
+            padding: 0 1rem 1rem;
+        }
+        
+        .flagship-name {
+            font-size: 1.3rem;
+            margin-bottom: 0.8rem;
+        }
+        
+        .flagship-description {
+            font-size: 0.8rem;
+            line-height: 1.4;
+            padding: 0 1.5rem;
+        }
+        
+        .flagship-controls {
+            bottom: 8px;
+        }
+        
+        .flagship-dot {
+            width: 8px;
+            height: 8px;
+        }
+        
+        .flagship-nav {
+            width: 25px;
+            height: 25px;
+            font-size: 0.8rem;
+        }
+
+        .footer-section {
+            padding: 2rem 1rem 8rem;
+        }
+        
+        .footer-content {
+            flex-direction: column;
+            gap: 2rem;
+            align-items: flex-start;
+        }
+        
+        .footer-left {
+            width: 100%;
+            align-items: flex-start;
+            text-align: left;
+        }
+        
+        .footer-logo-container {
+            flex-direction: column;
+            text-align: left;
+            gap: 0.5rem;
+            align-items: flex-start;
+        }
+        
+        .footer-club-name {
+            font-size: 1.2rem;
+        }
+        
+        .footer-address, .footer-email {
+            font-size: 0.8rem;
+        }
+        
+        .footer-right {
+            align-items: flex-start;
+            width: 100%;
+        }
+        
+        .social-icons {
+            flex-direction: row;
+            gap: 1rem;
+            justify-content: flex-start;
+        }
+        
+        .social-icon {
+            width: 45px;
+            height: 45px;
+            font-size: 1.3rem;
+        }
+        
+        .footer-bottom {
+            flex-direction: column;
+            gap: 0.8rem;
+            text-align: center;
+            margin-top: 1.5rem;
+            padding-top: 1rem;
+        }
+        
+        .copyright, .developer {
+            width: 100%;
+            text-align: center;
+            font-size: 0.7rem;
+        }
+    }
+    
+    /* Interactive Terminal Effect */
+    .terminal-effect {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        width: 300px;
+        height: 200px;
+        background-color: rgba(0, 0, 0, 0.7);
+        border: 1px solid var(--neon-blue);
+        box-shadow: var(--glow);
+        border-radius: 5px;
+        overflow: hidden;
+        font-family: 'Courier New', monospace;
+        font-size: 12px;
+        color: var(--neon-blue);
+        padding: 10px;
+        display: none; /* Can be toggled with JS */
+    }
+    
+    .terminal-header {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 10px;
+        padding-bottom: 5px;
+        border-bottom: 1px solid var(--neon-blue);
+    }
+    
+    .terminal-content {
+        height: calc(100% - 30px);
+        overflow-y: auto;
+    }
+    
+    .terminal-content p {
+        margin: 5px 0;
+        line-height: 1.4;
+    }
+    
+    .terminal-content p::before {
+        content: '> ';
+        color: var(--neon-pink);
+    }
+    
+    /* Glitch Effect (can be applied to elements with JS) */
+    .glitch {
+        position: relative;
+    }
+    
+    .glitch::before, .glitch::after {
+        content: attr(data-text);
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        opacity: 0.8;
+    }
+    
+    .glitch::before {
+        color: #0ff;
+        z-index: -1;
+        animation: glitch-effect 3s infinite;
+    }
+    
+    .glitch::after {
+        color: #f0f;
+        z-index: -2;
+        animation: glitch-effect 2s infinite reverse;
+    }
+    
+    @keyframes glitch-effect {
+        0% {
+        transform: translate(0);
+        }
+        20% {
+        transform: translate(-3px, 3px);
+        }
+        40% {
+        transform: translate(-3px, -3px);
+        }
+        60% {
+        transform: translate(3px, 3px);
+        }
+        80% {
+        transform: translate(3px, -3px);
+        }
+        100% {
+        transform: translate(0);
+        }
+    }
+    
+    /* Hover Effects */
+    .hover-glow:hover {
+        box-shadow: 0 0 15px var(--neon-blue), 0 0 30px var(--neon-blue);
+        transition: box-shadow 0.3s ease;
+    }
+    
+    /* Loading Animation */
+    .loading-spinner {
+        display: inline-block;
+        width: 20px;
+        height: 20px;
+        border: 3px solid rgba(5, 217, 232, 0.3);
+        border-radius: 50%;
+        border-top-color: var(--neon-blue);
+        animation: spin 1s ease-in-out infinite;
+    }
+    
+    @keyframes spin {
+        to {
+        transform: rotate(360deg);
+        }
+    }
+  </style>
+
+</head>
+<body>
+
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="logo-container">
+      <img src="static/uploads/logo.png" alt="Club Logo" class="logo" />
+      <div class="logo-text">Robotics Club <br> Of BRAC University</div>
+    </div>
+    <div class="nav-left">
+      <a href="#" class="nav-link active">Home</a>
+      <a href="#" class="nav-link">About Us</a>
+      <a href="#" class="nav-link">Events</a>
+      <a href="#" class="nav-link">News</a>
+      <a href="#" class="nav-link">Research</a>
+    </div>
+    <div class="nav-right">
+      <a href="#" class="btn neon-btn">Log In</a>
+      <a href="#" class="btn neon-btn">Register</a>
+    </div>
+    <div class="menu-icon" id="menuIcon">
+      <i class="fas fa-bars"></i>
+    </div>
+  </nav>
+
+  <!-- Mobile Menu -->
+  <div class="menu-overlay" id="menuOverlay"></div>
+  <div class="mobile-menu" id="mobileMenu">
+    <div class="close-menu" id="closeMenu">
+      <i class="fas fa-times"></i>
+    </div>
+    <div class="mobile-nav-links">
+      <a href="#" class="mobile-nav-link active">Home</a>
+      <a href="#" class="mobile-nav-link">About Us</a>
+      <a href="#" class="mobile-nav-link">Events</a>
+      <a href="#" class="mobile-nav-link">News</a>
+      <a href="#" class="mobile-nav-link">Research</a>
+    </div>
+    <div class="mobile-buttons">
+      <a href="#" class="btn neon-btn">Log In</a>
+      <a href="#" class="btn neon-btn">Register</a>
+    </div>
+  </div>
+
+  <!-- Background and Hero Text -->
+  <section class="hero-section">
+    <div class="hero-content">
+      <h1>ROBOTICS CLUB OF BRAC UNIVERSITY</h1>
+      <p class="slogan">The highly functioning sociopath</p>
+    </div>
+  </section>
+
+  <!-- Vision and Slider Container -->
+  <section class="vision-slider-container">
+    <!-- Vision Card -->
+    <div class="vision-card">
+      <h2 class="vision-title">Achieve your imagination through your robot</h2>
+      <p class="vision-text">This is the driving vision of the Robotics Club of BRAC University. We are committed to creating a platform where students can explore and develop their passion for robotics, turning imaginative ideas into reality through hands-on experience, collaboration, and mentorship. Our goal is to inspire a new generation of innovators, engineers, and leaders who are prepared to tackle real-world challenges with cutting-edge technology. We strive to bridge the gap between theoretical knowledge and practical implementation, empowering students to think critically and innovate fearlessly. Through workshops, competitions, and interdisciplinary projects, we nurture creativity and teamwork while shaping future leaders in the field of robotics.</p>
+    </div>
+    
+    <!-- Image Slider with Controls -->
+    <div class="js-slider">
+        <div class="slides-container" id="slider">
+          <img src="static/uploads/Fardeen.jpg" class="slide" />
+          <img src="static/uploads/Ismam.jpg" class="slide" />
+          <img src="static/uploads/Emon.jpg" class="slide" />
+          <img src="static/uploads/Maisa.jpg" class="slide" />
+          <img src="static/uploads/d1.jpg" class="slide" />
+          <img src="static/uploads/d2.jpg" class="slide" />
+          <img src="static/uploads/d3.jpg" class="slide" />
+          <img src="static/uploads/d4.jpg" class="slide" />
+          <img src="static/uploads/d5.jpg" class="slide" />
+          <img src="static/uploads/d6.jpg" class="slide" />
+          <img src="static/uploads/d7.jpg" class="slide" />
+          <img src="static/uploads/d8.jpg" class="slide" />
+        </div>
+        <div class="slider-controls">
+          <button onclick="prevSlide()">❮</button>
+          <button onclick="nextSlide()">❯</button>
+        </div>
+      </div>
+  </section>
+
+  <!-- Flagship Projects Section -->
+  <section class="flagship-project">
+    <h2 class="flagship-title">Our Flagship Projects</h2>
+    
+    <div class="flagship-card-container">
+      <div class="flagship-slides-container" id="flagship-slider">
+        <!-- Project 1 -->
+        <div class="flagship-slide">
+          <div class="flagship-content">
+            <h3 class="flagship-name">BRACU CHONDROBOT I (2011)</h3>
+            <p class="flagship-description">Bangladesh's first lunar robot, ChondroBot I, made history by securing 12th place at NASA’s prestigious Lunabotics competition in 2011. Competing on the global stage as the nation’s first-ever lunar excavator, this groundbreaking achievement showcased BRAC University’s innovative prowess. The robot successfully navigated rough simulated lunar terrain, demonstrated advanced control mechanisms, and efficiently collected soil samples. This remarkable success not only highlighted the technical excellence of Bangladeshi students but also inspired future generations to pursue space research and robotics innovation.</p>
+          </div>
+          <div class="flagship-image">
+            <img src="static/uploads/BRACU-Chondrobot 1.jpg" alt="BRACU CHONDROBOT I (2011)">
+          </div>
+        </div>
+        
+        <!-- Project 2 -->
+        <div class="flagship-slide">
+          <div class="flagship-content">
+            <h3 class="flagship-name">BRACU CHONDROBOT II (2012)</h3>
+            <p class="flagship-description">Building on its predecessor's remarkable success, ChondroBot II soared to new heights in 2012, finishing as the top Asian team and proudly outperforming global giants such as Harvard and Virginia Tech at NASA’s prestigious Lunabotics competition. With generous sponsorship from ROBI, the project demonstrated not only technical excellence but also the collaborative spirit of BRAC University students and faculty. This outstanding achievement firmly established the university as a pioneer in robotic innovation, inspiring confidence in Bangladesh’s growing space technology potential.</p>
+          </div>
+          <div class="flagship-image">
+            <img src="static/uploads/BRACU-Chondrobot 2.jpg" alt="BRACU CHONDROBOT II (2012)">
+          </div>
+        </div>
+        
+        <!-- Project 3 -->
+        <div class="flagship-slide">
+          <div class="flagship-content">
+            <h3 class="flagship-name">BRAC ONNESHA (2017)</h3>
+            <p class="flagship-description">BRAC Onnesha, Bangladesh’s first satellite, was successfully launched from the International Space Station (ISS) in 2017, marking a historic milestone in the nation’s scientific journey. Designed and developed by the talented students of BRAC University, this nanosatellite carried instruments for earth observation, atmospheric research, and communication experiments. By opening the door for Bangladesh’s expanding role in space research and advanced technology, BRAC Onnesha not only showcased national capability but also inspired future innovators to contribute to aerospace exploration.</p>
+          </div>
+          <div class="flagship-image">
+            <img src="static/uploads/BRACU-Onnesha.jpg" alt="BRAC ONNESHA (2017)">
+          </div>
+        </div>
+        
+        <!-- Project 4 -->
+        <div class="flagship-slide">
+          <div class="flagship-content">
+            <h3 class="flagship-name">BRACU OGNIBIR (2023)</h3>
+            <p class="flagship-description">Ognibir, Bangladesh's first industrial-grade autonomous robot, stands as a groundbreaking innovation by integrating advanced firefighting and rescue capabilities into a single platform. Designed to operate in hazardous environments, it ensures safety while minimizing human risk. In 2023, Ognibir triumphed as the Champion at AUST Tech Fest, outshining strong competitors and earning national recognition. This remarkable achievement further demonstrated BRAC University’s technical mastery in industrial robotics and highlighted its role in shaping the future of automation and disaster management technologies.</p>
+          </div>
+          <div class="flagship-image">
+            <img src="static/uploads/BRACU-Ognibir.jfif" alt="BRACU OGNIBIR (2023)">
+          </div>
+        </div>
+        
+        <!-- Project 5 -->
+        <div class="flagship-slide">
+          <div class="flagship-content">
+            <h3 class="flagship-name">BRACU DUBURI (2018)</h3>
+            <p class="flagship-description">BRACU Duburi, Bangladesh's first Autonomous Underwater Vehicle (AUV), marked a groundbreaking milestone in the nation’s robotics history. Despite limited resources and funding challenges, the team secured 2nd place at RoboSub 2023 in the USA, defeating Ivy League institutions and 35+ world-renowned universities. Their passion for technology and commitment to advancing underwater exploration showcased Bangladesh’s rising potential on the global stage. Notable achievements include: 1st Place Website (2024), 2nd Place Overall (2023), Ingenuity Special Award (2023), Best Rookie Team (2022), and 7th Place Overall (2018).</p>
+          </div>
+          <div class="flagship-image">
+            <img src="static/uploads/BRACU-Duburi.jpg" alt="BRACU DUBURI (2018)">
+          </div>
+        </div>
+        
+        <!-- Project 6 -->
+        <div class="flagship-slide">
+          <div class="flagship-content">
+            <h3 class="flagship-name">BRACU MONGOL TORI (2017)</h3>
+            <p class="flagship-description">BRAC University’s "Mongol-Tori" is Bangladesh’s first Mars rover, developed for the University Rover Challenge (URC) 2018 by a 22-member student team. The project reflects remarkable innovation, teamwork, and engineering resilience, positioning Bangladesh as a rising contributor to space and robotic technology. Over the years, Mongol-Tori has earned international recognition with top achievements, including 2nd Position in Asia at URC 2023, 4th in URC 2021, 3rd in URC 2020, and several other prestigious placements in global competitions and expos.</p>
+          </div>
+          <div class="flagship-image">
+            <img src="static/uploads/BRACU-Mongoltori.png" alt="BRACU MONGOL TORI (2017)">
+          </div>
+        </div>
+        
+        <!-- Project 7 -->
+        <div class="flagship-slide">
+          <div class="flagship-content">
+            <h3 class="flagship-name">BRACU NABIK (2024)</h3>
+            <p class="flagship-description">Nabik is a remote-controlled robot developed by BRAC University students to assist in critical flood relief operations in Bangladesh. Specifically designed to navigate through submerged and debris-filled areas, it has successfully delivered essential supplies such as food, medicine, and clean water to stranded communities during natural disasters. With the ability to carry payloads of up to 60 kilograms and a battery life of approximately 3 hours, Nabik highlights the potential of robotics in humanitarian aid and disaster management.</p>
+          </div>
+          <div class="flagship-image">
+            <img src="static/uploads/BRACU-Nabik.jpg" alt="BRACU NABIK (2024)">
+          </div>
+        </div>
+      </div>
+      
+      <!-- Navigation Controls -->
+      <button class="flagship-nav flagship-prev" onclick="prevFlagshipSlide()">❮</button>
+      <button class="flagship-nav flagship-next" onclick="nextFlagshipSlide()">❯</button>
+      
+      <!-- Dot Indicators -->
+      <div class="flagship-controls" id="flagship-dots">
+        <!-- Dots will be generated by JavaScript -->
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer Section -->
+  <footer class="footer-section">
+    <div class="footer-content">
+      <div class="footer-left">
+        <div class="footer-logo-container">
+          <img src="static/uploads/logo.png" alt="Club Logo" class="footer-logo" />
+          <div class="footer-club-name">Robotics Club of BRAC University</div>
+        </div>
+        <div class="footer-address">
+          6th floor, D Block (6D-25L), Robotics Research Lab,<br>
+          Brac University, Kha 224, Bir Uttam Rafiqul Islam Ave,<br>
+          Dhaka, Bangladesh
+        </div>
+        <a href="mailto:club.robu@g.bracu.ac.bd" class="footer-email">Email: club.robu@g.bracu.ac.bd</a>
+      </div>
+      
+      <div class="footer-right">
+        <div class="social-icons">
+          <a href="https://www.facebook.com/BRACU.Robotics.Club" target="_blank" class="social-icon">
+            <i class="fab fa-facebook-f"></i>
+          </a>
+          <a href="https://www.instagram.com/bracu_robu" target="_blank" class="social-icon">
+            <i class="fab fa-instagram"></i>
+          </a>
+        </div>
+      </div>
+    </div>
+    
+    <div class="footer-bottom">
+      <div class="copyright">2025 Robotics Club of BRAC University. All right reserved.</div>
+      <div class="developer">Developed by RAJIN IBNA RAJUANUR RAHMAN</div>
+    </div>
+  </footer>
+
+  <script>
+    // Mobile menu functionality
+    const menuIcon = document.getElementById('menuIcon');
+    const closeMenu = document.getElementById('closeMenu');
+    const mobileMenu = document.getElementById('mobileMenu');
+    const menuOverlay = document.getElementById('menuOverlay');
+    
+    menuIcon.addEventListener('click', () => {
+      mobileMenu.classList.add('active');
+      menuOverlay.classList.add('active');
+      document.body.style.overflow = 'hidden';
+    });
+    
+    closeMenu.addEventListener('click', () => {
+      mobileMenu.classList.remove('active');
+      menuOverlay.classList.remove('active');
+      document.body.style.overflow = 'auto';
+    });
+    
+    menuOverlay.addEventListener('click', () => {
+      mobileMenu.classList.remove('active');
+      menuOverlay.classList.remove('active');
+      document.body.style.overflow = 'auto';
+    });
+
+    // Existing slider functionality
+    const slider = document.getElementById('slider');
+    const slides = slider.getElementsByClassName('slide');
+    let index = 0;
+  
+    function showSlide(i) {
+      slider.style.transform = `translateX(-${i * 100}%)`;
+    }
+  
+    function nextSlide() {
+      index = (index + 1) % slides.length;
+      showSlide(index);
+    }
+  
+    function prevSlide() {
+      index = (index - 1 + slides.length) % slides.length;
+      showSlide(index);
+    }
+  
+    // Auto Slide every 4 seconds
+    setInterval(() => {
+      nextSlide();
+    }, 4000);
+
+    // Flagship Projects Slider Functionality
+    const flagshipSlider = document.getElementById('flagship-slider');
+    const flagshipSlides = flagshipSlider.getElementsByClassName('flagship-slide');
+    const flagshipDotsContainer = document.getElementById('flagship-dots');
+    let flagshipIndex = 0;
+    let flagshipInterval;
+
+    // Create dot indicators
+    for (let i = 0; i < flagshipSlides.length; i++) {
+      const dot = document.createElement('div');
+      dot.classList.add('flagship-dot');
+      if (i === 0) dot.classList.add('active');
+      dot.addEventListener('click', () => {
+        goToFlagshipSlide(i);
+      });
+      flagshipDotsContainer.appendChild(dot);
+    }
+
+    const flagshipDots = flagshipDotsContainer.getElementsByClassName('flagship-dot');
+
+    function showFlagshipSlide(i) {
+      flagshipSlider.style.transform = `translateX(-${i * 100}%)`;
+      
+      // Update active dot
+      for (let j = 0; j < flagshipDots.length; j++) {
+        flagshipDots[j].classList.remove('active');
+      }
+      flagshipDots[i].classList.add('active');
+      
+      flagshipIndex = i;
+    }
+
+    function nextFlagshipSlide() {
+      const nextIndex = (flagshipIndex + 1) % flagshipSlides.length;
+      showFlagshipSlide(nextIndex);
+      resetFlagshipInterval();
+    }
+
+    function prevFlagshipSlide() {
+      const prevIndex = (flagshipIndex - 1 + flagshipSlides.length) % flagshipSlides.length;
+      showFlagshipSlide(prevIndex);
+      resetFlagshipInterval();
+    }
+
+    function goToFlagshipSlide(i) {
+      showFlagshipSlide(i);
+      resetFlagshipInterval();
+    }
+
+    function resetFlagshipInterval() {
+      clearInterval(flagshipInterval);
+      flagshipInterval = setInterval(() => {
+        nextFlagshipSlide();
+      }, 5000);
+    }
+
+    // Initialize auto-slide for flagship projects
+    flagshipInterval = setInterval(() => {
+      nextFlagshipSlide();
+    }, 5000);
+  </script>
+
+</body>
+</html>
